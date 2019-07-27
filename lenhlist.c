@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define IN 1
-#define OUT 0
 #define MAXPASSWORDS 12
 #define ASCII 128
 
