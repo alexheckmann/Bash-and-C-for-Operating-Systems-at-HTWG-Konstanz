@@ -17,14 +17,21 @@ void usage(void)
 
 int readfile(FILE *f)
 {
+    // i: line count
+    // j: char count
     int c, i = 0, j = 0;
+    
+    // reading in chars until end of file is reached
     while ((c = fgetc(f)) != EOF)
     {
+        // test if whitespace char is reached
         if (c == ' ' || c == '\n' || c == '\t')
         {
+            // reading in next line, resetting char count
             i++;
             j = 0;
         }
+        
         else
         {
             passwords[i][j++] = c;
@@ -54,15 +61,16 @@ int main(int argc, char *argv[])
     readfile(f);
     fclose(f);
 
-
-
+    // 
     for (int i = 0; i < MAXCOUNT + 1; i++)
     {
+        // forking to create new child process
         pid_t pid = fork();
 
-
+        // test whether fork was successful
         if (pid == 0)
         {
+            // using child process to open openssl decryption
             execlp("openssl", "aes-256-ecb", "-d", "-in", argv[2], "-out", "decrypted.txt", "-k", passwords[i], NULL);
         }
 
@@ -71,15 +79,12 @@ int main(int argc, char *argv[])
             err(1, "wait");
         }
 
+        // checking for successful decryptions, printing out password candidates
         if (WEXITSTATUS(status) == 0)
         {
             printf("candidate: %s\n", passwords[i]);
         }
     }
-
-
-
-
 
     return EXIT_SUCCESS;
 }
